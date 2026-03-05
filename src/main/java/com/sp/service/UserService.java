@@ -27,4 +27,8 @@ public class UserService {
 	public UserVO fetchUser(Integer userId) throws Exception{
 		return this.userRepository.getUser(userId);
 	}
+	
+	public void batchInsertUsers(List<UserVO> userList) throws Exception{
+		this.userRepository.batchInsertUsers(userList);
+	}
 }
