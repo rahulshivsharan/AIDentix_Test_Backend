@@ -26,4 +26,5 @@ public class UserVO implements Serializable{
 		this.username = username;
 		this.password = password;
 	}
+		
 }
