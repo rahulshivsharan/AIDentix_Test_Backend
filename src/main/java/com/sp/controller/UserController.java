@@ -51,71 +51,42 @@ public class UserController {
 	@GetMapping
 	public ResponseEntity fetchAllUsers() {
 		logger.info("fetch all users");
-		try {
-			List<UserVO> userList = userService.fetchUsers();
-			return new ResponseEntity<List<UserVO>>(userList, HttpStatus.OK);
-		}catch(Exception e) {			
-			logger.error(" Exception in fetchAllUsers "+e.getMessage());
-			HashMap<String, String> errorMap = new HashMap<String, String>();
-			errorMap.put("error", e.getMessage());
-			return new ResponseEntity<Map<String, String>>(errorMap, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		
+		List<UserVO> userList = userService.fetchUsers();
+		return new ResponseEntity<List<UserVO>>(userList, HttpStatus.OK);
 	}
 	
 	
 	@GetMapping("/{id}")
 	public ResponseEntity fetchUserById(@PathVariable(name = "id") Integer userId) {
-		logger.info("get user having user Id %d ",userId);
-		try {
-			UserVO user = userService.fetchUser(userId);
-			return new ResponseEntity<UserVO>(user, HttpStatus.OK);
-		}catch(Exception e) {
-			logger.error(" Exception in fetchUsersById "+e.getMessage());
-			HashMap<String, String> errorMap = new HashMap<String, String>();
-			errorMap.put("error", e.getMessage());
-			return new ResponseEntity<Map<String, String>>(errorMap, HttpStatus.INTERNAL_SERVER_ERROR);
-		}		
+		logger.info("get user having user Id %d ", userId);
+		UserVO user = userService.fetchUser(userId);
+		return new ResponseEntity<UserVO>(user, HttpStatus.OK);
 	}
 	
 	
 	@PostMapping
-	public ResponseEntity createUser(@RequestBody UserVO vo) throws Exception{
+	public ResponseEntity createUser(@RequestBody UserVO vo) throws Exception {
 		logger.info("create new user ");
-		try {
-			int count = this.userService.createUser(vo);			
-			List<UserVO> userList = userService.fetchUsers();
-			return new ResponseEntity<List<UserVO>>(userList, HttpStatus.OK);
-		}catch(Exception e) {
-			logger.error(" Exception in createUser "+e.getMessage());
-			HashMap<String, String> errorMap = new HashMap<String, String>();
-			errorMap.put("error", e.getMessage());
-			return new ResponseEntity<Map<String, String>>(errorMap, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		int count = this.userService.createUser(vo);
+		List<UserVO> userList = userService.fetchUsers();
+		return new ResponseEntity<List<UserVO>>(userList, HttpStatus.OK);
 	}
 	
 	@PostMapping("/upload")
-	public ResponseEntity fileUpload(@RequestParam("file") MultipartFile file) throws Exception{
+	public ResponseEntity fileUpload(@RequestParam("file") MultipartFile file) throws Exception {
 		logger.info("file upload for creating mulitple users from csv ");
-		try {
-			Reader reader = new InputStreamReader(file.getInputStream());			
-			Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(reader);
-			List<UserVO> userlist = new ArrayList<UserVO>();
-			for(CSVRecord record : records) {
-				String username = record.get("username");
-				String password = record.get("password");				
-				
-				userlist.add(new UserVO(username, password));				
-			}
-			userService.batchInsertUsers(userlist);
-			List<UserVO> userList = userService.fetchUsers();
-			return new ResponseEntity<List<UserVO>>(userList, HttpStatus.OK);
-		}catch(Exception e) {
-			logger.error(" Exception in fileUpload "+e.getMessage());
-			HashMap<String, String> errorMap = new HashMap<String, String>();
-			errorMap.put("error", e.getMessage());
-			return new ResponseEntity<Map<String, String>>(errorMap, HttpStatus.INTERNAL_SERVER_ERROR);
+
+		Reader reader = new InputStreamReader(file.getInputStream());
+		Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(reader);
+		List<UserVO> userlist = new ArrayList<UserVO>();
+		for (CSVRecord record : records) {
+			String username = record.get("username");
+			String password = record.get("password");
+
+			userlist.add(new UserVO(username, password));
 		}
-		
+		userService.batchInsertUsers(userlist);
+		List<UserVO> userList = userService.fetchUsers();
+		return new ResponseEntity<List<UserVO>>(userList, HttpStatus.OK);
 	}
 }
